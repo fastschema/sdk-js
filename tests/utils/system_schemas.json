@@ -1,0 +1,507 @@
+{
+  "file": {
+    "name": "file",
+    "namespace": "files",
+    "label_field": "name",
+    "disable_timestamp": false,
+    "fields": [
+      {
+        "type": "uint64",
+        "name": "id",
+        "label": "ID",
+        "unique": true,
+        "sortable": true,
+        "filterable": true,
+        "db": {
+          "attr": "UNSIGNED",
+          "increment": true,
+          "key": "UNI"
+        },
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "string",
+        "name": "disk",
+        "label": "Disk",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "name",
+        "label": "Name",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "path",
+        "label": "Path",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "type",
+        "label": "Type",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "uint64",
+        "name": "size",
+        "label": "Size",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "uint64",
+        "name": "user_id",
+        "label": "user_id",
+        "db": {
+          "attr": "UNSIGNED"
+        },
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "relation",
+        "name": "user",
+        "label": "User",
+        "relation": {
+          "schema": "user",
+          "field": "files",
+          "type": "o2m",
+          "fk_columns": {
+            "current_column": "",
+            "target_column": "user_id"
+          },
+          "optional": false
+        },
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "time",
+        "name": "created_at",
+        "label": "Created At",
+        "default": "CURRENT_TIMESTAMP",
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "updated_at",
+        "label": "Updated At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "deleted_at",
+        "label": "Deleted At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      }
+    ],
+    "is_system_schema": true
+  },
+  "permission": {
+    "name": "permission",
+    "namespace": "permissions",
+    "label_field": "resource",
+    "disable_timestamp": false,
+    "fields": [
+      {
+        "type": "uint64",
+        "name": "id",
+        "label": "ID",
+        "unique": true,
+        "sortable": true,
+        "filterable": true,
+        "db": {
+          "attr": "UNSIGNED",
+          "increment": true,
+          "key": "UNI"
+        },
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "uint64",
+        "name": "role_id",
+        "label": "role_id",
+        "db": {
+          "attr": "UNSIGNED"
+        },
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "string",
+        "name": "resource",
+        "label": "Resource",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "value",
+        "label": "Value",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "relation",
+        "name": "role",
+        "label": "Role",
+        "relation": {
+          "schema": "role",
+          "field": "permissions",
+          "type": "o2m",
+          "fk_columns": {
+            "current_column": "",
+            "target_column": "role_id"
+          },
+          "optional": false
+        },
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "time",
+        "name": "created_at",
+        "label": "Created At",
+        "default": "CURRENT_TIMESTAMP",
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "updated_at",
+        "label": "Updated At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "deleted_at",
+        "label": "Deleted At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      }
+    ],
+    "is_system_schema": true
+  },
+  "role": {
+    "name": "role",
+    "namespace": "roles",
+    "label_field": "name",
+    "disable_timestamp": false,
+    "fields": [
+      {
+        "type": "uint64",
+        "name": "id",
+        "label": "ID",
+        "unique": true,
+        "sortable": true,
+        "filterable": true,
+        "db": {
+          "attr": "UNSIGNED",
+          "increment": true,
+          "key": "UNI"
+        },
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "string",
+        "name": "name",
+        "label": "Name",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "description",
+        "label": "Description",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "bool",
+        "name": "root",
+        "label": "Root",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "relation",
+        "name": "users",
+        "label": "Users",
+        "relation": {
+          "schema": "user",
+          "field": "roles",
+          "type": "m2m",
+          "owner": true,
+          "fk_columns": {
+            "current_column": "roles",
+            "target_column": "users"
+          },
+          "junction_table": "roles_users",
+          "optional": false
+        },
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "relation",
+        "name": "permissions",
+        "label": "Permissions",
+        "relation": {
+          "schema": "permission",
+          "field": "role",
+          "type": "o2m",
+          "owner": true,
+          "fk_columns": null,
+          "optional": false
+        },
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "time",
+        "name": "created_at",
+        "label": "Created At",
+        "default": "CURRENT_TIMESTAMP",
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "updated_at",
+        "label": "Updated At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "deleted_at",
+        "label": "Deleted At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      }
+    ],
+    "is_system_schema": true
+  },
+  "roles_users": {
+    "name": "roles_users",
+    "namespace": "roles_users",
+    "label_field": "roles",
+    "disable_timestamp": false,
+    "fields": [
+      {
+        "type": "uint64",
+        "name": "roles",
+        "label": "roles",
+        "db": {
+          "attr": "UNSIGNED"
+        }
+      },
+      {
+        "type": "uint64",
+        "name": "users",
+        "label": "users",
+        "db": {
+          "attr": "UNSIGNED"
+        }
+      },
+      {
+        "type": "time",
+        "name": "created_at",
+        "label": "Created At",
+        "default": "CURRENT_TIMESTAMP",
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "updated_at",
+        "label": "Updated At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "deleted_at",
+        "label": "Deleted At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      }
+    ],
+    "is_system_schema": true,
+    "is_junction_schema": true
+  },
+  "user": {
+    "name": "user",
+    "namespace": "users",
+    "label_field": "username",
+    "disable_timestamp": false,
+    "fields": [
+      {
+        "type": "uint64",
+        "name": "id",
+        "label": "ID",
+        "unique": true,
+        "sortable": true,
+        "filterable": true,
+        "db": {
+          "attr": "UNSIGNED",
+          "increment": true,
+          "key": "UNI"
+        },
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "string",
+        "name": "username",
+        "label": "Username",
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "email",
+        "label": "Email",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "password",
+        "label": "Password",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "bool",
+        "name": "active",
+        "label": "Active",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "provider",
+        "label": "Provider",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "provider_id",
+        "label": "Provider Id",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "string",
+        "name": "provider_username",
+        "label": "Provider Username",
+        "optional": true,
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "relation",
+        "name": "roles",
+        "label": "Roles",
+        "relation": {
+          "schema": "role",
+          "field": "users",
+          "type": "m2m",
+          "fk_columns": {
+            "current_column": "users",
+            "target_column": "roles"
+          },
+          "junction_table": "roles_users",
+          "optional": false
+        },
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "relation",
+        "name": "files",
+        "label": "Files",
+        "relation": {
+          "schema": "file",
+          "field": "user",
+          "type": "o2m",
+          "owner": true,
+          "fk_columns": null,
+          "optional": false
+        },
+        "db": {},
+        "is_system_field": true
+      },
+      {
+        "type": "time",
+        "name": "created_at",
+        "label": "Created At",
+        "default": "CURRENT_TIMESTAMP",
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "updated_at",
+        "label": "Updated At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      },
+      {
+        "type": "time",
+        "name": "deleted_at",
+        "label": "Deleted At",
+        "optional": true,
+        "db": {},
+        "is_system_field": true,
+        "is_locked": true
+      }
+    ],
+    "is_system_schema": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "tag": {
+    "name": "tag",
+    "namespace": "tags",
+    "label_field": "name",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "string",
+        "sortable": true,
+        "filterable": true,
+        "unique": false
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "string",
+        "optional": true
+      }
+    ]
+  },
+  "blog": {
+    "name": "blog",
+    "namespace": "blogs",
+    "label_field": "name",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "string",
+        "sortable": true,
+        "filterable": true
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "string",
+        "optional": true,
+        "renderer": { "class": "textarea" }
+      },
+      {
+        "name": "image",
+        "label": "Image",
+        "type": "file",
+        "optional": true
+      },
+      {
+        "name": "tags",
+        "label": "Tags",
+        "type": "relation",
+        "optional": true,
+        "default": null,
+        "relation": {
+          "schema": "tag",
+          "field": "blogs",
+          "type": "m2m"
+        }
+      },
+      {
+        "name": "content",
+        "label": "Content",
+        "type": "text",
+        "optional": true,
+        "renderer": { "class": "editor" }
+      }
+    ]
+  }
+}

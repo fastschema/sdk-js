@@ -1,0 +1,37 @@
+name: tests
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  test:
+    name: Test / OS ${{ matrix.os }} / Node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: ['20']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Test
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl unzip wget
+          curl -s https://api.github.com/repos/fastschema/fastschema/releases/latest | grep linux_amd64.zip | grep browser_download_url | cut -d : -f 2,3 | sed -e 's/^ "//' -e 's/"$//' | wget -qi -
+          unzip -o $(find | grep linux_amd64.zip)
+          ./fastschema setup -u admin -p 123 && nohup ./fastschema start &
+          npm clean-install
+          npm run coverage
+      - name: Upload coverage reports to Codecov
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node == '20' }}
+        uses: codecov/codecov-action@v4.5.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/coverage-final.json
+          flags: unittests
+          slug: fastschema/sdk-js
