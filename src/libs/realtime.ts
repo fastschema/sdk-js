@@ -100,7 +100,6 @@ export class Realtime {
       cb = idOrCallback;
     }
 
-
     const qs = new URLSearchParams();
     qs.append('schema', this._data.name);
     qs.append('event', config.event);
@@ -141,11 +140,15 @@ export class Realtime {
     }
 
     ws.onmessage = (event) => {
-      const data: {
-        event: EventType;
-        data: T | T[];
-      } = JSON.parse(event.data);
-      eventData.callback(data.data, data.event);
+      try {
+        const data: {
+          event: EventType;
+          data: T | T[];
+        } = JSON.parse(event.data);
+        eventData.callback(data.data, data.event);
+      } catch (e) {
+        eventData.callback(null, null, e);
+      }
 
       if (config.once) {
         this.off(eventData.callback);
