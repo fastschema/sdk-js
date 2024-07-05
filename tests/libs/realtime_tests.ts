@@ -1,7 +1,3 @@
-/**
- * @vitest-environment jsdom
- */
-
 import { DefaultAuthStore, FastSchema, FilterObject, FsRequest } from '@/index';
 import { EventCallbackArray, EventType, Realtime } from '@/libs/realtime';
 import { cleanup, createTestFs, sleep, Tag, userSchemas, waitServerReady } from '@tests/utils';
@@ -30,8 +26,6 @@ describe.sequential('Realtime tests', () => {
     const request = new FsRequest(appUrl, {
       getAuthToken: () => authStore.getToken(),
     });
-
-
 
     const realtime = new Realtime(userSchemas['tag'], request);
     const callback = (_tag: Tag, _event: EventType, err: Error) => {

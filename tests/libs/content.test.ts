@@ -2,6 +2,23 @@ import { FastSchema, FilterObject } from '@/index';
 import { cleanup, createTestFs, Tag, userSchemas, waitServerReady } from '@tests/utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+interface FileType extends Blob {
+  readonly lastModified: number;
+  readonly name: string;
+  readonly webkitRelativePath: string;
+}
+
+let FileObj: {
+  new (fileBits: BlobPart[], fileName: string, options?: FilePropertyBag): File;
+  prototype: File;
+};
+
+if (typeof File === 'undefined') {
+  const stdFile = require('@web-std/file');
+  FileObj = stdFile.File;
+} else {
+  FileObj = File;
+}
 
 let fs: FastSchema;
 afterAll(async () => cleanup(fs));
@@ -59,9 +76,9 @@ describe.sequential('Content tests', async () => {
   });
 
   it('should successfully upload a file', async () => {
-    const files: File[] = [];
+    const files: FileType[] = [];
     for (let i = 0; i < 5; i++) {
-      files.push(new File([`test content ${i + 1}`], `test${i + 1}.txt`));
+      files.push(new FileObj([`test content ${i + 1}`], `test${i + 1}.txt`));
     }
 
     const result = await fs.file().upload(files);

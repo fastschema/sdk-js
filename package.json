@@ -2,7 +2,7 @@
   "name": "fastschema",
   "description": "Fastschema SDK for JavaScript",
   "author": "Nguyen Ngoc Phuong",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "repository": "fastschema/sdk-js",
   "keywords": [
@@ -34,6 +34,7 @@
     "@vitest/coverage-istanbul": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
     "@vitest/ui": "^1.6.0",
+    "@web-std/file": "^3.0.3",
     "happy-dom": "^14.12.0",
     "jsdom": "^24.1.0",
     "rimraf": "^5.0.7",
@@ -43,7 +44,6 @@
     "vitest": "^1.6.0",
     "vitest-fetch-mock": "^0.2.2"
   },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
   "dependencies": {
     "base-64": "^1.0.0",
     "js-cookie": "^3.0.5",
