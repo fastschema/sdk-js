@@ -25,6 +25,7 @@ jobs:
           curl -s https://api.github.com/repos/fastschema/fastschema/releases/latest | grep linux_amd64.zip | grep browser_download_url | cut -d : -f 2,3 | sed -e 's/^ "//' -e 's/"$//' | wget -qi -
           unzip -o $(find | grep linux_amd64.zip)
           ./fastschema setup -u admin -p 123 && nohup ./fastschema start &
+          sleep 3
           npm clean-install
           npm run coverage
       - name: Upload coverage reports to Codecov

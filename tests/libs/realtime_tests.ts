@@ -21,7 +21,7 @@ describe.sequential('Realtime tests', () => {
   });
 
   it('should failed with invalid realtime url', async () => {
-    const appUrl = 'http://localhost';
+    const appUrl = 'http://127.0.0.1';
     const authStore = new DefaultAuthStore();
     const request = new FsRequest(appUrl, {
       getAuthToken: () => authStore.getToken(),

@@ -4,7 +4,7 @@ import { createTestFs } from '@tests/utils';
 
 describe.sequential('FS tests', async () => {
   it('should create an instance of FastSchema', () => {
-    const appUrl = 'http://localhost:8000';
+    const appUrl = 'http://127.0.0.1:8000';
     const fs = new FastSchema(appUrl);
     expect(fs).toBeInstanceOf(FastSchema);
     expect(fs.auth()).toBeInstanceOf(Auth);

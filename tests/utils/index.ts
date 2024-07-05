@@ -40,7 +40,7 @@ export const waitServerReady = async (fs: FastSchema) => {
 
 export const createTestFs = async (opts?: FsTestOptions) => {
   opts = opts ?? {};
-  const appUrl = opts.appUrl ?? 'http://localhost:8000';
+  const appUrl = opts.appUrl ?? 'http://127.0.0.1:8000';
   const authStore = new DefaultAuthStore();
   const request = opts?.request ?? new FsRequest(appUrl, {
     getAuthToken: () => authStore.getToken(),

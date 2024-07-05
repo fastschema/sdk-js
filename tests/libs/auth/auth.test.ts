@@ -5,7 +5,7 @@ import { describe } from 'node:test';
 
 const createAuthTest = () => {
   const store = new DefaultAuthStore();
-  const request = new FsRequest('http://localhost:8000', {
+  const request = new FsRequest('http://127.0.0.1:8000', {
     getAuthToken: () => store.getToken(),
   });
   const auth = new Auth(store, request);
