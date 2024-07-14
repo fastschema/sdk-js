@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>FastSchema SDK</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      padding: 10px;
+      margin: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style-position: inside;
+    }
+
+    #app {
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>FastSchema SDK</h1>
+  <div id="app">
+    <h2>Me</h2>
+    <ul id="me"></ul>
+
+    <h2>Schemas</h2>
+    <ul id="schemas"></ul>
+  </div>
+  <script src="https://unpkg.com/fastschema@latest/dist/fastschema.umd.js"></script>
+  <script>
+    (async () => {
+      const fs = new fastschema.FastSchema("http://localhost:8000");
+      await fs.auth().login({
+        login: "admin",
+        password: "123",
+      });
+      await fs.init();
+
+      const schemas = fs.schema();
+      const schemasElement = document.getElementById("schemas");
+      for (const schema of schemas) {
+        const li = document.createElement("li");
+        li.textContent = schema.name();
+        schemasElement.appendChild(li);
+      }
+
+      const me = await fs.auth().me();
+      const meElement = document.getElementById("me");
+      for (const key in me) {
+        let value = me[key];
+        if (typeof value === "object") {
+          value = JSON.stringify(value, null, 2);
+        }
+        const li = document.createElement("li");
+        li.textContent = `${key}: ${value}`;
+        meElement.appendChild(li);
+      }
+    })();
+  </script>
+</body>
+
+</html>

@@ -2,9 +2,26 @@
 
 **Document**
 
-https://fastschema.com/docs/sdk-js
+https://fastschema.com/docs/sdk/
 
-**Installation**
+FastSchema SDK provides a convenient way to connect to the FastSchema backend and perform various operations.
+
+The FastSchema JavaScript SDK works in both Node.js and browser environments. To use the SDK, you need to install it using npm.
+
+## Installation
+
+FastSchema SDK can be installed using browser script tags or npm.
+
+### Browser
+
+```html
+<script src="https://unpkg.com/fastschema@latest/dist/fastschema.umd.js"></script>
+<script>
+  const fs = new fastschema.FastSchema("http://localhost:8000");
+</script>
+```
+
+### NPM
 
 ```bash
 npm install fastschema
@@ -15,15 +32,15 @@ npm install fastschema
 The initialization must be done before any other operation.
 
 ```typescript
-import { FastSchema } from 'fastschema';
+import { FastSchema } from "fastschema";
 
 // Create a new instance of FastSchema
-const fs = new FastSchema('https://localhost:8000');
+const fs = new FastSchema("https://localhost:8000");
 
 // Login
 await fs.auth().login({
-  login: 'admin',
-  password: '123',
+  login: "admin",
+  password: "123",
 });
 
 // Initialize: This must be called before any other operation
@@ -36,22 +53,22 @@ await fs.init();
 
 ```typescript
 await fs.schemas().create({
-  name: 'tag',
-  namespace: 'tags',
-  label_field: 'name',
+  name: "tag",
+  namespace: "tags",
+  label_field: "name",
   fields: [
     {
-      name: 'name',
-      label: 'Name',
-      type: 'string',
+      name: "name",
+      label: "Name",
+      type: "string",
       sortable: true,
       filterable: true,
       unique: false,
     },
     {
-      name: 'description',
-      label: 'Description',
-      type: 'string',
+      name: "description",
+      label: "Description",
+      type: "string",
       optional: true,
     },
   ],
@@ -63,13 +80,13 @@ await fs.schemas().create({
 This operation will throw an error if the schema does not exist.
 
 ```typescript
-const schemaTag = fs.schema('tag');
+const schemaTag = fs.schema("tag");
 ```
 
 ### Update a schema
 
 ```typescript
-await fs.schemas().update('tag', {
+await fs.schemas().update("tag", {
   schema: {
     // Same as create
   },
@@ -85,15 +102,15 @@ await fs.schemas().update('tag', {
 ### Delete a schema
 
 ```typescript
-await fs.schemas().delete('tag');
+await fs.schemas().delete("tag");
 ```
 
 ## Content operations
 
-## Get content
+### Get content
 
 ```typescript
-fs.schema('tag').get<Tag>(params);
+fs.schema("tag").get<Tag>(params);
 ```
 
 `params` can be one of the following:
@@ -122,24 +139,24 @@ interface Tag {
   description: string;
 }
 
-const createdTag = await fs.schema('tag').create<Tag>({
-  name: 'Tag 01',
-  description: 'A description',
+const createdTag = await fs.schema("tag").create<Tag>({
+  name: "Tag 01",
+  description: "A description",
 });
 ```
 
 ### Update content
 
 ```typescript
-const updated = await fs.schema('tag').update(id, {
-  description: 'updated desc tag 1',
+const updated = await fs.schema("tag").update(id, {
+  description: "updated desc tag 1",
 });
 ```
 
 ### Delete content
 
 ```typescript
-await fs.schema('tag').delete(id);
+await fs.schema("tag").delete(id);
 ```
 
 ### Upload files
@@ -153,41 +170,47 @@ for (let i = 0; i < 5; i++) {
 const result = await fs.file().upload(files);
 ```
 
-## Realtime
+**Note**
+
+Nodejs version before 20 does not support the `File` object.
+You can use package `@web-std/file` to create a `File` object.
+
+## Realtime Updates
 
 FastSchema provides a way to listen to events in real-time.
+
 - `create`: When a new record is created
 - `update`: When a record is updated
 - `delete`: When a record is deleted
 - `*`: Listen to all events
 
 ```typescript
-const schemaTag = fs.schema('tag');
+const schemaTag = fs.schema("tag");
 
 const cb1 = (data: T, event: EventType, error: Error) => {
-  console.log('Event:', event, 'Data:', data, 'Error:', error);
+  console.log("Event:", event, "Data:", data, "Error:", error);
 };
 
 const cb2 = (data: T[], event: EventType, error: Error) => {
-  console.log('Event:', event, 'Data:', data, 'Error:', error);
+  console.log("Event:", event, "Data:", data, "Error:", error);
 };
 
 const cb3 = (data: T | T[], event: EventType, error: Error) => {
-  console.log('Event:', event, 'Data:', data, 'Error:', error);
+  console.log("Event:", event, "Data:", data, "Error:", error);
 };
 
-schemaTag.on('create', cb1);
-schemaTag.on('update', cb2);
-schemaTag.on('delete', cb2);
-schemaTag.on('*', cb3);
+schemaTag.on("create", cb1);
+schemaTag.on("update", cb2);
+schemaTag.on("delete", cb2);
+schemaTag.on("*", cb3);
 ```
 
 You can also listen to events for a specific record.
 
 ```typescript
-schemaTag.on('create', id, cb1);
-schemaTag.on('update', id, cb1);
-schemaTag.on('delete', id, cb1);
+schemaTag.on("create", id, cb1);
+schemaTag.on("update", id, cb1);
+schemaTag.on("delete", id, cb1);
 ```
 
 or use the configuration events:

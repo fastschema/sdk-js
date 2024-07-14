@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { User } from '@/libs/types';
+import { User } from '../types';
 
 export interface AuthData {
   alg: string;

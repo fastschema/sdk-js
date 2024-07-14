@@ -2,7 +2,7 @@
   "name": "fastschema",
   "description": "Fastschema SDK for JavaScript",
   "author": "Nguyen Ngoc Phuong",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "MIT",
   "repository": "fastschema/sdk-js",
   "keywords": [

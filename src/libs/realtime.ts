@@ -74,6 +74,7 @@ export class Realtime {
   on<T = Content>(event: EventConfigCreate, cb: EventCallback<T>): Promise<this>;
   on<T = Content>(event: EventConfigUpdate, cb: EventCallbackArray<T>): Promise<this>;
   on<T = Content>(event: EventConfigUpdateItem, cb: EventCallback<T>): Promise<this>;
+  on<T = Content>(event: EventConfigWildcard, cb: EventCallback<T>): Promise<this>;
   on<T = Content>(event: EventConfigWildcardItem, cb: EventCallback<T>): Promise<this>;
 
   async on<T = Content>(

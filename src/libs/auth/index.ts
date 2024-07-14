@@ -1,5 +1,5 @@
-import { IRequest } from '@/libs/request';
-import { User } from '@/libs/types';
+import { IRequest } from '../request';
+import { User } from '../types';
 import { AuthStore, AuthData } from './store';
 import { jwtDecode } from 'jwt-decode';
 
