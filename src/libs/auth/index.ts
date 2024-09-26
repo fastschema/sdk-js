@@ -5,14 +5,25 @@ import { jwtDecode } from 'jwt-decode';
 
 export * from './store';
 
-export interface LoginData {
+export interface UserLoginData {
   login: string;
   password: string;
 }
 
+export interface UserRegisterData {
+  username: string;
+  email: string;
+  password: string;
+  confirm_password: string;
+}
+
+export interface RegisterResult {
+  status: 'success' | 'error' | 'pending'; // pending is for email verification
+}
+
 export class Auth {
   private authData: AuthData | undefined;
-  constructor(private store: AuthStore, private request: IRequest) { }
+  constructor(private store: AuthStore, private request: IRequest) {}
 
   useToken(token: string): void {
     this.authData = parseUserInfo(token);
@@ -23,12 +34,14 @@ export class Auth {
   }
 
   async me(): Promise<User> {
-    const user = await this.request.get<User>('/user/me');
+    const user = await this.request.get<User>('/auth/me');
     return user;
   }
 
-  async login(data: LoginData): Promise<AuthData> {
-    const loginResponse = await this.request.post<Pick<AuthData, 'token' | 'expires'>>('/user/login', data);
+  async login(data: UserLoginData): Promise<AuthData> {
+    const loginResponse = await this.request.post<
+      Pick<AuthData, 'token' | 'expires'>
+    >('/auth/local/login', data);
     this.authData = {
       ...parseUserInfo(loginResponse.token),
       ...loginResponse,
@@ -36,6 +49,14 @@ export class Auth {
 
     this.store.setToken(this.authData.token);
     return this.authData;
+  }
+
+  async register(data: UserRegisterData): Promise<RegisterResult> {
+    const registerResponse = await this.request.post<RegisterResult>(
+      '/auth/local/register',
+      data
+    );
+    return registerResponse;
   }
 }
 
@@ -47,4 +68,4 @@ export const parseUserInfo = (token: string): AuthData => {
     alg: decodedHeader.alg,
     typ: decodedHeader.typ,
   };
-}
+};
