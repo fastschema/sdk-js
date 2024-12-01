@@ -17,8 +17,14 @@ export interface UserRegisterData {
   confirm_password: string;
 }
 
-export interface RegisterResult {
-  status: 'success' | 'error' | 'pending'; // pending is for email verification
+export interface ResetPasswordData {
+  token: string;
+  password: string;
+  confirm_password: string;
+}
+
+export interface ActivationStatus {
+  activation: 'auto' | 'manual' | 'email' | 'activated';
 }
 
 export class Auth {
@@ -29,8 +35,19 @@ export class Auth {
     this.authData = parseUserInfo(token);
   }
 
-  data(): AuthData | undefined {
+  async data(): Promise<AuthData | undefined> {
+    if (!this.authData) {
+      const token = await this.store.getToken();
+      if (token) {
+        this.useToken(token);
+      }
+    }
     return this.authData;
+  }
+
+  async user(): Promise<User | undefined> {
+    const authData = await this.data();
+    return authData?.user;
   }
 
   async me(): Promise<User> {
@@ -38,10 +55,16 @@ export class Auth {
     return user;
   }
 
-  async login(data: UserLoginData): Promise<AuthData> {
+  async logout(): Promise<void> {
+    this.authData = undefined;
+    this.store.clearToken();
+  }
+
+  // Use for local login or oauth login
+  async login(provider: string, data?: UserLoginData): Promise<AuthData> {
     const loginResponse = await this.request.post<
       Pick<AuthData, 'token' | 'expires'>
-    >('/auth/local/login', data);
+    >(`/auth/${provider}/login`, data);
     this.authData = {
       ...parseUserInfo(loginResponse.token),
       ...loginResponse,
@@ -51,12 +74,38 @@ export class Auth {
     return this.authData;
   }
 
-  async register(data: UserRegisterData): Promise<RegisterResult> {
-    const registerResponse = await this.request.post<RegisterResult>(
-      '/auth/local/register',
+  // Use for local registration
+  async register(data: UserRegisterData): Promise<ActivationStatus> {
+    const registerResponse = await this.request.post<ActivationStatus>(
+      `/auth/local/register`,
       data
     );
     return registerResponse;
+  }
+
+  // Activate local registration
+  async activate(token: string): Promise<ActivationStatus> {
+    return await this.request.post(`/auth/local/activate`, { token });
+  }
+
+  // Resend activation link
+  async resendActivationLink(token: string): Promise<ActivationStatus> {
+    return await this.request.post(`/auth/local/activate/send`, { token });
+  }
+
+  // Recover password
+  async recover(email: string): Promise<boolean> {
+    return await this.request.post(`/auth/local/recover`, { email });
+  }
+
+  // Recovery token check
+  async recoverCheck(token: string): Promise<boolean> {
+    return await this.request.post(`/auth/local/recover/check`, { token });
+  }
+
+  // Reset password
+  async resetPassword(data: ResetPasswordData): Promise<boolean> {
+    return await this.request.post(`/auth/local/recover/reset`, data);
   }
 }
 
