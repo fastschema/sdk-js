@@ -19,7 +19,7 @@ describe('Auth tests', async () => {
   it('should login fail', async () => {
     const auth = createAuthTest();
     try {
-      await auth.login({ login: 'test', password: 'test' });
+      await auth.login('local', { login: 'test', password: 'test' });
     } catch (e: any) {
       expect(e).toBeInstanceOf(Error);
     }
@@ -28,9 +28,9 @@ describe('Auth tests', async () => {
   it('should login success', async () => {
     // test login success
     const auth = createAuthTest();
-    const authData = await auth.login({ login: 'admin', password: '123' });
+    const authData = await auth.login('local', { login: 'admin', password: '123' });
     expect(authData).toBeDefined
-    expect(auth.data()).toEqual(authData);
+    expect(await auth.data()).toEqual(authData);
 
     const me = await auth.me();
     expect(me).toBeDefined();
@@ -48,6 +48,6 @@ describe('Auth tests', async () => {
 
     // valid token
     authWithToken.useToken(authData.token);
-    expect(authData).toMatchObject(authWithToken.data() ?? {});
+    expect(authData).toMatchObject(await authWithToken.data() ?? {});
   });
 });
