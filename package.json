@@ -26,15 +26,6 @@
     "coverageui": "vitest --coverage.enabled=true --coverage --ui",
     "coverage": "vitest --coverage.enabled=true --coverage"
   },
-  "dependencies": {
-    "base-64": "^1.0.0",
-    "js-cookie": "^3.0.5",
-    "jwt-decode": "^4.0.0",
-    "ws": "^8.17.1"
-  },
-  "peerDependencies": {
-    "react": "^18.3.1"
-  },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
@@ -53,6 +44,13 @@
     "vite": "^5.2.0",
     "vitest": "^1.6.0",
     "vitest-fetch-mock": "^0.2.2"
+  },
+  "dependencies": {
+    "base-64": "^1.0.0",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
+    "react": "^18.3.1",
+    "ws": "^8.17.1"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

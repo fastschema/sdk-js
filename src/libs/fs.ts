@@ -52,8 +52,7 @@ export class FastSchema {
   }
 
   async init(): Promise<void> {
-    await this.auth().data();
-    // await this._schemas.sync();
+    await this._schemas.sync();
   }
 
   schemas(): Schemas {

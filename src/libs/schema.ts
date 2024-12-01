@@ -1,70 +1,43 @@
 import { getContentFilterQuery } from './helpers';
 import { Realtime } from './realtime';
 import { IRequest, RequestData } from './request';
-import {
-  Content,
-  Field,
-  ListOptions,
-  MediasUploadResult,
-  Pagination,
-  SchemaRawData,
-  SchemaUpdateData,
-} from './types';
+import { Content, Field, ListOptions, MediasUploadResult, Pagination, SchemaRawData, SchemaUpdateData } from './types';
 
-// const errSchemaNotFound = (name: string) => {
-//   throw new Error(
-//     `schema ${name} not found, please check the schema name and make sure you have called init()`
-//   );
-// };
+const errSchemaNotFound = (name: string) => {
+  throw new Error(`schema ${name} not found, please check the schema name and make sure you have called init()`);
+}
 
 export class Schemas {
   private _schemas: Schema[] = [];
 
-  constructor(private _request: IRequest) {}
+  constructor(private _request: IRequest) { }
 
   async sync(): Promise<void> {
     const schemas = await this._request.get<SchemaRawData[]>('/schema');
-    this._schemas = schemas.map((s) => new Schema(s, this._request));
+    this._schemas = schemas.map(s => new Schema(s, this._request));
   }
 
   has(name: string): boolean {
-    return !!this._schemas.find((s) => s.name() === name);
+    return !!this._schemas.find(s => s.name() === name);
   }
 
   schema(name?: string): Schema[] | Schema {
     if (name) {
-      const schema = this._schemas.find((s) => s.name() === name);
-      return (
-        schema ??
-        new Schema(
-          {
-            name,
-            namespace: '',
-            label_field: '',
-            fields: [],
-          },
-          this._request
-        )
-      );
+      const schema = this._schemas.find(s => s.name() === name);
+      return schema ?? errSchemaNotFound(name);
     }
 
     return this._schemas;
   }
 
   async create(schema: SchemaRawData): Promise<Schema> {
-    const createdSchema = await this._request.post<SchemaRawData>(
-      '/schema',
-      schema
-    );
+    const createdSchema = await this._request.post<SchemaRawData>('/schema', schema);
     await this.sync();
     return new Schema(createdSchema, this._request);
   }
 
   async update(name: string, updateData: SchemaUpdateData): Promise<Schema> {
-    const updatedSchema = await this._request.put<SchemaRawData>(
-      `/schema/${name}`,
-      updateData
-    );
+    const updatedSchema = await this._request.put<SchemaRawData>(`/schema/${name}`, updateData);
     await this.sync();
     return new Schema(updatedSchema, this._request);
   }
@@ -126,9 +99,7 @@ export class Schema extends Realtime {
 
   get<T = Content>(params: number | string): Promise<T>;
   get<T = Content>(params?: ListOptions): Promise<Pagination<T>>;
-  get<T = Content>(
-    params?: number | string | ListOptions
-  ): Promise<Pagination<T> | T> {
+  get<T = Content>(params?: number | string | ListOptions): Promise<Pagination<T> | T> {
     if (typeof params === 'string') {
       return this._request.get<T>(`/content/${this.name()}/${params}`);
     }
@@ -138,9 +109,7 @@ export class Schema extends Realtime {
     }
 
     let qs = getContentFilterQuery(params);
-    return this._request.get<Pagination<T>>(
-      `/content/${this.name()}${qs ? '?' + qs : ''}`
-    );
+    return this._request.get<Pagination<T>>(`/content/${this.name()}${qs ? ('?' + qs) : ''}`);
   }
 }
 
@@ -151,14 +120,10 @@ export class FsFile extends Schema {
       formData.append('file', file);
     }
 
-    return await this._request.post<MediasUploadResult>(
-      '/file/upload',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
+    return await this._request.post<MediasUploadResult>('/file/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 }

@@ -15,7 +15,6 @@ export interface AuthStore {
   getDefaultKey(): string;
   setToken(token: string, key?: string): Promise<void>;
   getToken(key?: string): Promise<string | undefined>;
-  clearToken(key?: string): Promise<void>;
 }
 
 export class DefaultAuthStore {
@@ -40,14 +39,10 @@ export class DefaultAuthStore {
   getToken(key?: string): Promise<string | undefined> {
     return this.store.getToken(key);
   }
-
-  clearToken(key?: string): Promise<void> {
-    return this.store.clearToken(key);
-  }
 }
 
 export class BaseAuthStore {
-  constructor(protected defaultKey: string) {}
+  constructor(protected defaultKey: string) { }
 
   getDefaultKey(): string {
     return this.defaultKey;
@@ -66,11 +61,6 @@ export class BrowserStore extends BaseAuthStore {
   getToken(key?: string): Promise<string | undefined> {
     return Promise.resolve(this.cookie.get(key ?? this.defaultKey));
   }
-
-  clearToken(key?: string): Promise<void> {
-    this.cookie.remove(key ?? this.defaultKey);
-    return Promise.resolve();
-  }
 }
 
 // In node environment, we can't use cookies, so we use a simple in-memory store
@@ -86,10 +76,5 @@ export class NodeStore extends BaseAuthStore {
 
   getToken(key?: string): Promise<string | undefined> {
     return Promise.resolve(this.store[key ?? this.defaultKey]);
-  }
-
-  clearToken(key?: string): Promise<void> {
-    delete this.store[key ?? this.defaultKey];
-    return Promise.resolve();
   }
 }
