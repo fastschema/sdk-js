@@ -52,7 +52,7 @@ export const createTestFs = async (opts?: FsTestOptions) => {
   });
 
   if (!opts.skipLogin) {
-    await fs.auth().login({ login: 'admin', password: '123' });
+    await fs.auth().login('local', { login: 'admin', password: '123' });
     await fs.init();
   }
 

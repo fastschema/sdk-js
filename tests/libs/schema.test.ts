@@ -8,6 +8,7 @@ afterEach(async () => cleanup(fs));
 beforeAll(async () => {
   fs = await createTestFs();
   await waitServerReady(fs);
+  await fs.syncSchemas();
 });
 
 describe.sequential('Schema tests', async () => {

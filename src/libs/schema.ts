@@ -11,11 +11,11 @@ import {
   SchemaUpdateData,
 } from './types';
 
-// const errSchemaNotFound = (name: string) => {
-//   throw new Error(
-//     `schema ${name} not found, please check the schema name and make sure you have called init()`
-//   );
-// };
+const errSchemaNotFound = (name: string) => {
+  throw new Error(
+    `schema ${name} not found, please check the schema name and make sure you have called init()`
+  );
+};
 
 export class Schemas {
   private _schemas: Schema[] = [];
@@ -34,18 +34,7 @@ export class Schemas {
   schema(name?: string): Schema[] | Schema {
     if (name) {
       const schema = this._schemas.find((s) => s.name() === name);
-      return (
-        schema ??
-        new Schema(
-          {
-            name,
-            namespace: '',
-            label_field: '',
-            fields: [],
-          },
-          this._request
-        )
-      );
+      return schema ?? errSchemaNotFound(name);
     }
 
     return this._schemas;
