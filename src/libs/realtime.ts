@@ -4,9 +4,21 @@ import { Content, Filter, SchemaRawData } from './types';
 export const WS_CLOSE_NORMAL = 1000;
 
 export type EventType = 'create' | 'update' | 'delete' | '*';
-export type EventCallback<T> = (data: T, event: EventType, error: Error) => void;
-export type EventCallbackArray<T> = (data: T[], event: EventType, error: Error) => void;
-export type EventCallbackWildcard<T> = (data: T | T[], event: EventType, error: Error) => void;
+export type EventCallback<T> = (
+  data: T,
+  event: EventType,
+  error: Error
+) => void;
+export type EventCallbackArray<T> = (
+  data: T[],
+  event: EventType,
+  error: Error
+) => void;
+export type EventCallbackWildcard<T> = (
+  data: T | T[],
+  event: EventType,
+  error: Error
+) => void;
 
 export interface EventBase {
   id?: number;
@@ -37,50 +49,82 @@ export interface EventConfigWildcardItem extends EventBase {
   id: number;
 }
 
-export type EventConfig = EventConfigCreate | EventConfigUpdate | EventConfigWildcard | EventConfigUpdateItem | EventConfigWildcardItem;
+export type EventConfig =
+  | EventConfigCreate
+  | EventConfigUpdate
+  | EventConfigWildcard
+  | EventConfigUpdateItem
+  | EventConfigWildcardItem;
 
 export interface EventData {
   ws: WebSocket;
   callback: any;
 }
 
-
-let WS: new (
-  url: string,
-  protocols?: string | string[],
-) => WebSocket
-
+let WS: new (url: string, protocols?: string | string[]) => WebSocket;
 
 if (typeof window === 'undefined') {
-  WS = require('ws');
+  import('ws')
+    .then((wsModule) => {
+      WS = wsModule.default as unknown as typeof WebSocket;
+    })
+    .catch((e) => {
+      console.error('Error importing ws:', e);
+    });
 }
 
 if (typeof window !== 'undefined') {
   WS = WebSocket;
 }
 
-
 export class Realtime {
   private _events: EventData[] = [];
-  constructor(protected _data: SchemaRawData, protected _request: IRequest) { }
+  constructor(protected _data: SchemaRawData, protected _request: IRequest) {}
 
   on<T = Content>(event: 'create', cb: EventCallback<T>): Promise<this>;
   on<T = Content>(event: 'update', cb: EventCallbackArray<T>): Promise<this>;
   on<T = Content>(event: 'delete', cb: EventCallbackArray<T>): Promise<this>;
   on<T = Content>(event: '*', cb: EventCallbackWildcard<T>): Promise<this>;
-  on<T = Content>(event: 'create', id: number, cb: EventCallback<T>): Promise<this>;
-  on<T = Content>(event: 'update', id: number, cb: EventCallback<T>): Promise<this>;
-  on<T = Content>(event: 'delete', id: number, cb: EventCallback<T>): Promise<this>;
-  on<T = Content>(event: EventConfigCreate, cb: EventCallback<T>): Promise<this>;
-  on<T = Content>(event: EventConfigUpdate, cb: EventCallbackArray<T>): Promise<this>;
-  on<T = Content>(event: EventConfigUpdateItem, cb: EventCallback<T>): Promise<this>;
-  on<T = Content>(event: EventConfigWildcard, cb: EventCallback<T>): Promise<this>;
-  on<T = Content>(event: EventConfigWildcardItem, cb: EventCallback<T>): Promise<this>;
+  on<T = Content>(
+    event: 'create',
+    id: number,
+    cb: EventCallback<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: 'update',
+    id: number,
+    cb: EventCallback<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: 'delete',
+    id: number,
+    cb: EventCallback<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: EventConfigCreate,
+    cb: EventCallback<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: EventConfigUpdate,
+    cb: EventCallbackArray<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: EventConfigUpdateItem,
+    cb: EventCallback<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: EventConfigWildcard,
+    cb: EventCallback<T>
+  ): Promise<this>;
+  on<T = Content>(
+    event: EventConfigWildcardItem,
+    cb: EventCallback<T>
+  ): Promise<this>;
 
   async on<T = Content>(
     eventOrConfig: EventType | EventConfig,
     idOrCallback: number | EventCallbackWildcard<T>,
-    cb?: EventCallbackWildcard<T>,
+    cb?: EventCallbackWildcard<T>
   ): Promise<this> {
     let config: EventConfig;
 
@@ -115,14 +159,14 @@ export class Realtime {
     const subProtocol = authToken ? ['Authorization', `${authToken}`] : [];
     const ws = new WS(
       `${wsProtocol}://${wsDomain}/realtime/content?${qs.toString()}`,
-      subProtocol,
+      subProtocol
     );
 
     const eventData: EventData = {
       ...config,
       ws,
       callback: cb as EventCallbackWildcard<T>,
-    }
+    };
 
     this._events.push(eventData);
 
@@ -131,14 +175,20 @@ export class Realtime {
       if (className === 'ErrorEvent') {
         console.error('WS Error:', (event as ErrorEvent).error);
       }
-    }
+    };
 
     ws.onclose = (event) => {
       if (event.code !== WS_CLOSE_NORMAL || event.reason !== '') {
-        eventData.callback(null, null, new Error(`WS Closed with code = '${event.code}' and reason = '${event.reason}'`));
+        eventData.callback(
+          null,
+          null,
+          new Error(
+            `WS Closed with code = '${event.code}' and reason = '${event.reason}'`
+          )
+        );
       }
       this.off(eventData.callback);
-    }
+    };
 
     ws.onmessage = (event) => {
       try {
@@ -154,14 +204,14 @@ export class Realtime {
       if (config.once) {
         this.off(eventData.callback);
       }
-    }
+    };
 
     return this;
   }
 
   off(cb: EventCallbackWildcard<any>): void {
-    const eventData = this._events.find(event => event.callback === cb);
-    this._events = this._events.filter(event => event.callback !== cb);
+    const eventData = this._events.find((event) => event.callback === cb);
+    this._events = this._events.filter((event) => event.callback !== cb);
     eventData?.ws.close(WS_CLOSE_NORMAL);
   }
 }
