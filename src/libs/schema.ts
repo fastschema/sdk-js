@@ -17,10 +17,14 @@ const errSchemaNotFound = (name: string) => {
   );
 };
 
+export interface SchemasConfig {
+  strict?: boolean;
+}
+
 export class Schemas {
   private _schemas: Schema[] = [];
 
-  constructor(private _request: IRequest) {}
+  constructor(private _request: IRequest, private config?: SchemasConfig) {}
 
   async sync(): Promise<void> {
     const schemas = await this._request.get<SchemaRawData[]>('/schema');
@@ -34,7 +38,15 @@ export class Schemas {
   schema(name?: string): Schema[] | Schema {
     if (name) {
       const schema = this._schemas.find((s) => s.name() === name);
-      return schema ?? errSchemaNotFound(name);
+      return (
+        schema ??
+        (this.config?.strict
+          ? errSchemaNotFound(name)
+          : new Schema(
+              { name, label_field: 'id', namespace: name, fields: [] },
+              this._request
+            ))
+      );
     }
 
     return this._schemas;

@@ -41,6 +41,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.14.2",
     "@types/react": "^18.3.7",
+    "@types/ws": "^8.5.13",
     "@vitest/coverage-istanbul": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
     "@vitest/ui": "^1.6.0",
