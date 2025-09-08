@@ -8,6 +8,7 @@ export interface FsRequestOptions {
   apiBaseName?: string;
   authCookieName?: string;
   authDisableAutoHeader?: boolean;
+  authUseXAuthTokenHeader?: boolean;
   getAuthToken: (authKey?: string) => Promise<string | undefined>;
 }
 
@@ -78,10 +79,14 @@ export class FsRequest {
     }
 
     if (authToken) {
+      if (this.opts.authUseXAuthTokenHeader) {
+        requestHeaders['X-Auth-Token'] = authToken;
+        return requestHeaders;
+      }
+
       if (this.opts.authCookieName) {
         const existingCookies = requestHeaders['Cookie'] ? requestHeaders['Cookie'] + '; ' : '';
         requestHeaders['Cookie'] = `${existingCookies}${this.opts.authCookieName}=${authToken}`;
-        console.log(requestHeaders);
         return requestHeaders;
       }
 
