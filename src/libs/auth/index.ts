@@ -24,7 +24,7 @@ export interface ResetPasswordData {
 }
 
 export interface ActivationStatus {
-  activation: 'auto' | 'manual' | 'email' | 'activated';
+  activation: 'auto' | 'manual' | 'email' | 'activated' | 'sent',
 }
 
 export class Auth {
@@ -57,7 +57,7 @@ export class Auth {
 
   async logout(): Promise<void> {
     this.authData = undefined;
-    this.store.clearToken();
+    await this.store.clearToken();
   }
 
   // Use for local login or oauth login
@@ -70,7 +70,7 @@ export class Auth {
       ...loginResponse,
     };
 
-    this.store.setToken(this.authData.token);
+    await this.store.setToken(this.authData.token);
     return this.authData;
   }
 
