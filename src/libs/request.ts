@@ -6,6 +6,8 @@ export type RequestHeaders = Record<string, string>;
 
 export interface FsRequestOptions {
   apiBaseName?: string;
+  authCookieName?: string;
+  authDisableAutoHeader?: boolean;
   getAuthToken: (authKey?: string) => Promise<string | undefined>;
 }
 
@@ -71,7 +73,18 @@ export class FsRequest {
       delete requestHeaders['Content-Type'];
     }
 
+    if (this.opts.authDisableAutoHeader) {
+      return requestHeaders;
+    }
+
     if (authToken) {
+      if (this.opts.authCookieName) {
+        const existingCookies = requestHeaders['Cookie'] ? requestHeaders['Cookie'] + '; ' : '';
+        requestHeaders['Cookie'] = `${existingCookies}${this.opts.authCookieName}=${authToken}`;
+        console.log(requestHeaders);
+        return requestHeaders;
+      }
+
       requestHeaders['Authorization'] = `Bearer ${authToken}`;
     }
 

@@ -14,7 +14,10 @@ export interface FastSchemaOptionsWithAuthStore extends FastSchemaBaseOptions {
   authStore: AuthStore;
 }
 
-export type FastSchemaOptions = FastSchemaOptionsWithAuthKey | FastSchemaOptionsWithAuthStore;
+export type FastSchemaOptions = (FastSchemaOptionsWithAuthKey | FastSchemaOptionsWithAuthStore) & {
+  authCookieName?: string;
+  authDisableAutoHeader?: boolean;
+};
 
 export class FastSchema {
   private _request: IRequest;
@@ -37,6 +40,8 @@ export class FastSchema {
     }
 
     this._request = opts?.request ?? new FsRequest(this.appUrl, {
+      authCookieName: this._opts.authCookieName,
+      authDisableAutoHeader: this._opts.authDisableAutoHeader,
       getAuthToken: this._authStore.getToken.bind(this._authStore),
     });
     this._auth = new Auth(this._authStore, this._request);
