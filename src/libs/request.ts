@@ -1,7 +1,16 @@
 import { getErrorMessage } from './helpers';
 import { RequestError } from './error';
 
-export type RequestMethods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';
+export type RequestMethods =
+  | 'GET'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'PATCH'
+  | 'HEAD'
+  | 'OPTIONS'
+  | 'CONNECT'
+  | 'TRACE';
 export type RequestHeaders = Record<string, string>;
 
 export interface FsRequestOptions {
@@ -34,10 +43,18 @@ export interface IRequest {
   baseApiUrl: () => string;
   getAuthToken: (() => Promise<string | undefined>) | undefined;
   get<T>(url: string, options?: RequestOptions): Promise<T>;
-  post<T>(url: string, data?: RequestData, options?: RequestOptions): Promise<T>;
+  post<T>(
+    url: string,
+    data?: RequestData,
+    options?: RequestOptions
+  ): Promise<T>;
   put<T>(url: string, data?: RequestData, options?: RequestOptions): Promise<T>;
   delete<T>(url: string, options?: RequestOptions): Promise<T>;
-  patch<T>(url: string, data?: RequestData, options?: RequestOptions): Promise<T>;
+  patch<T>(
+    url: string,
+    data?: RequestData,
+    options?: RequestOptions
+  ): Promise<T>;
   head<T>(url: string, options?: RequestOptions): Promise<T>;
   options<T>(url: string, options?: RequestOptions): Promise<T>;
   connect<T>(url: string, options?: RequestOptions): Promise<T>;
@@ -63,7 +80,10 @@ export class FsRequest {
     return this._baseApiUrl;
   }
 
-  async getRequestHeader(headers?: RequestHeaders, data?: any): Promise<RequestHeaders> {
+  async getRequestHeader(
+    headers?: RequestHeaders,
+    data?: any
+  ): Promise<RequestHeaders> {
     const authToken = (await this.getAuthToken?.()) ?? undefined;
     const requestHeaders: RequestHeaders = {
       'Content-Type': 'application/json;charset=utf-8',
@@ -85,8 +105,12 @@ export class FsRequest {
       }
 
       if (this.opts.authCookieName) {
-        const existingCookies = requestHeaders['Cookie'] ? requestHeaders['Cookie'] + '; ' : '';
-        requestHeaders['Cookie'] = `${existingCookies}${this.opts.authCookieName}=${authToken}`;
+        const existingCookies = requestHeaders['Cookie']
+          ? requestHeaders['Cookie'] + '; '
+          : '';
+        requestHeaders[
+          'Cookie'
+        ] = `${existingCookies}${this.opts.authCookieName}=${authToken}`;
         return requestHeaders;
       }
 
@@ -96,13 +120,18 @@ export class FsRequest {
     return requestHeaders;
   }
 
-  async createRequestInit(method: string, data?: any, headers?: RequestHeaders): Promise<RequestInit> {
+  async createRequestInit(
+    method: string,
+    data?: any,
+    options?: RequestOptions
+  ): Promise<RequestInit> {
+    const headers = options?.headers ?? {};
     const requestInit: RequestInit = {
       method: method,
       mode: 'cors',
       cache: 'no-cache',
       credentials: 'same-origin',
-      headers: await this.getRequestHeader(headers ?? {}, data),
+      headers: await this.getRequestHeader(headers, data),
       redirect: 'follow',
       referrerPolicy: 'strict-origin-when-cross-origin',
     };
@@ -130,9 +159,9 @@ export class FsRequest {
     method: RequestMethods,
     url: string,
     data?: any,
-    headers?: RequestHeaders,
+    options?: RequestOptions
   ): Promise<T> => {
-    const requestInit = await this.createRequestInit(method, data, headers);
+    const requestInit = await this.createRequestInit(method, data, options);
     const response = await fetch(this.createRequestUrl(url), requestInit);
 
     if (!response.ok) {
@@ -140,7 +169,7 @@ export class FsRequest {
       try {
         const errorResponse = await response.json();
         msg = getErrorMessage(errorResponse.error, msg);
-      } catch (e) { }
+      } catch (e) {}
 
       throw new RequestError(msg);
     }
@@ -152,41 +181,53 @@ export class FsRequest {
     }
 
     return (result as { data: T }).data;
+  };
+
+  async get<T>(url: string, options?: RequestOptions): Promise<T> {
+    return await this.createRequest<T>('GET', url, null, options);
   }
 
-  async get<T>(url: string, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('GET', url, null, headers);
+  async post<T>(
+    url: string,
+    data?: RequestData,
+    options?: RequestOptions
+  ): Promise<T> {
+    return await this.createRequest<T>('POST', url, data, options);
   }
 
-  async post<T>(url: string, data?: RequestData, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('POST', url, data, headers);
+  async put<T>(
+    url: string,
+    data?: RequestData,
+    options?: RequestOptions
+  ): Promise<T> {
+    return await this.createRequest<T>('PUT', url, data, options);
   }
 
-  async put<T>(url: string, data?: RequestData, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('PUT', url, data, headers);
+  async delete<T>(url: string, options?: RequestOptions): Promise<T> {
+    return await this.createRequest<T>('DELETE', url, null, options);
   }
 
-  async delete<T>(url: string, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('DELETE', url, null, headers);
+  async patch<T>(
+    url: string,
+    data?: RequestData,
+    options?: RequestOptions
+  ): Promise<T> {
+    return await this.createRequest<T>('PATCH', url, data, options);
   }
 
-  async patch<T>(url: string, data?: RequestData, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('PATCH', url, data, headers);
+  async head<T>(url: string, options?: RequestOptions): Promise<T> {
+    return await this.createRequest<T>('HEAD', url, null, options);
   }
 
-  async head<T>(url: string, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('HEAD', url, null, headers);
+  async options<T>(url: string, options?: RequestOptions): Promise<T> {
+    return await this.createRequest<T>('OPTIONS', url, null, options);
   }
 
-  async options<T>(url: string, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('OPTIONS', url, null, headers);
+  async connect<T>(url: string, options?: RequestOptions): Promise<T> {
+    return await this.createRequest<T>('CONNECT', url, null, options);
   }
 
-  async connect<T>(url: string, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('CONNECT', url, null, headers);
-  }
-
-  async trace<T>(url: string, headers?: RequestHeaders): Promise<T> {
-    return await this.createRequest<T>('TRACE', url, null, headers);
+  async trace<T>(url: string, options?: RequestOptions): Promise<T> {
+    return await this.createRequest<T>('TRACE', url, null, options);
   }
 }
