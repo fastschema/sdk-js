@@ -8,33 +8,48 @@ export interface ListOptions {
   select?: string;
 }
 
-export type FilterOperator = '$eq' | '$neq' | '$gt' | '$gte' | '$lt' | '$lte' | '$like' | '$in' | '$nin' | '$null';
-
-export type FilterValue = string | number | boolean | null | string[] | number[] | boolean[] | null[];
+export type FilterOperator =
+  | '$eq'
+  | '$neq'
+  | '$gt'
+  | '$gte'
+  | '$lt'
+  | '$lte'
+  | '$notlike'
+  | '$contains'
+  | '$notcontains'
+  | '$containsfold'
+  | '$notcontainsfold'
+  | '$like'
+  | '$in'
+  | '$nin'
+  | '$null';
+export type FilterValue =
+  | string
+  | number
+  | boolean
+  | null
+  | string[]
+  | number[]
+  | boolean[]
+  | null[];
 
 export interface FilterFieldsObject {
   [key: string]: FilterObject | FilterValue | Filter[];
 }
 
 export interface FilterAndOr {
-  '$or'?: Filter[];
-  '$and'?: Filter[];
+  $or?: Filter[];
+  $and?: Filter[];
 }
 
 export type FilterMixedFieldsAndOr = FilterFieldsObject & FilterAndOr;
 
 export type Filter = FilterMixedFieldsAndOr | FilterFieldsObject;
 
-// export interface Filter {
-//   [key: string]: FilterObject | FilterValue | Filter[] | undefined;
-//   '$or'?: Filter[];
-//   '$and'?: Filter[];
-// }
-
 export type FilterObject = {
-  [k in FilterOperator]: FilterValue;
-}
-
+  [k in FilterOperator]?: FilterValue;
+};
 
 export interface PaginationMeta {
   total: number;
@@ -43,6 +58,6 @@ export interface PaginationMeta {
   last_page: number;
 }
 
-export interface Pagination<T = Content> extends PaginationMeta{
+export interface Pagination<T = Content> extends PaginationMeta {
   items: T[];
 }
